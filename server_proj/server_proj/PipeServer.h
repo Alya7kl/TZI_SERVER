@@ -1,4 +1,4 @@
-##pragma once
+#pragma once
 #ifndef PIPE_SERVER_INCLUDE
 #define PIPE_SERVER_INCLUDE
 
