@@ -209,23 +209,41 @@ public:
 
     bool WriteResponse(char response)
     {
-        DWORD NBytesWritten;
-        if (IsOpen())
-        {
-            OVERLAPPED ov = { 0 };
-            ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+        DWORD NBytesWritten = 0;
 
-            if (WriteFile(hPipe, &response, sizeof(char), &NBytesWritten, &ov) == FALSE)
+        if (!IsOpen())
+            return false;
+
+        OVERLAPPED ov = {};
+        ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+        if (ov.hEvent == NULL)
+            return false;
+
+        BOOL result = WriteFile(
+            hPipe,
+            &response,
+            sizeof(char),
+            &NBytesWritten,
+            &ov
+        );
+
+        if (!result)
+        {
+            if (GetLastError() == ERROR_IO_PENDING)
             {
-                if (GetLastError() == ERROR_IO_PENDING)
-                {
-                    GetOverlappedResult(hPipe, &ov, &NBytesWritten, TRUE);
-                }
+                result = GetOverlappedResult(
+                    hPipe,
+                    &ov,
+                    &NBytesWritten,
+                    TRUE
+                );
             }
-            CloseHandle(ov.hEvent);
-            return true;
         }
-        return false;
+
+        CloseHandle(ov.hEvent);
+
+        return result == TRUE && NBytesWritten == sizeof(char);
     }
 
     //------------------------------------------------------------------

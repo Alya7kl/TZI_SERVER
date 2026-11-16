@@ -193,9 +193,21 @@ int main()
                             }
 
                             // Відправляємо відповідь клієнту (1 або 0)
-                            Pipes[PipeNumber].WriteResponse(response);
+                            //Pipes[PipeNumber].WriteResponse(response);
 
-                            // Клієнт відключається сервером
+                            //// Клієнт відключається сервером
+                            //Pipes[PipeNumber].DisconnectClient();
+                            //PipesConnect = PipesConnect - 1;
+
+                            if (Pipes[PipeNumber].WriteResponse(response))
+                            {
+                                cout << "Відповідь відправлено клієнту: " << response << endl;
+                            }
+                            else
+                            {
+                                cout << "Помилка відправлення відповіді клієнту!" << endl;
+                            }
+
                             Pipes[PipeNumber].DisconnectClient();
                             PipesConnect = PipesConnect - 1;
 
